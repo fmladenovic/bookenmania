@@ -1,4 +1,4 @@
-## Running the scripts
+## Running scripts
 
 ```bash
 $ node task1.js
