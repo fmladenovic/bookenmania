@@ -1,4 +1,4 @@
-import { all, call, put } from '@redux-saga/core/effects';
+import { call, put } from '@redux-saga/core/effects';
 
 import * as actions from './book.actions';
 import * as api from '../../api/api.saga-services';
@@ -22,20 +22,18 @@ export function* searchBooks(params: Pagination<IBookSearchParams>) {
     return;
   }
 
-const books = pagedBooks.docs.map((book) => ({
-  id: createId(book.key),
-  key: book.key,
-  title: book.title,
-  authorName: book.authorName,
-  text: book.text,
-  coverI: book.coverI,
-  cover: createBookCoverPath(book.coverI),
-}));
+  const books = pagedBooks.docs.map((book) => ({
+    id: createId(book.key),
+    key: book.key,
+    title: book.title,
+    authorName: book.authorName,
+    text: book.text,
+    coverI: book.coverI,
+    cover: createBookCoverPath(book.coverI),
+  }));
 
-  const bookIds = (yield put(
-    actions.storeBook(books),
-  )) as IBook['id'][];
-  return books.map(book => book.id);
+  yield put(actions.storeBook(books));
+  return books.map((book) => book.id);
 }
 
 export function* getBook(isbn: IBook['id']) {

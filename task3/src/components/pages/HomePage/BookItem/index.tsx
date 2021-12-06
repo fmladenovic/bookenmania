@@ -21,11 +21,12 @@ export const BookItem: FunctionComponent<IBookItemProps> = ({ bookId }) => {
         <div className={classes.titleAuthorsWrapper}>
           <span className={classes.title}>{book.title}</span>
           <div className={classes.authors}>
-            {book.authorName.map((name, i) => (
-              <span key={`book-${book.id}-author-${i}`} className={classes.author}>
-                {name}
-              </span>
-            ))}
+            {book.authorName &&
+              book.authorName.map((name, i) => (
+                <span key={`book-${book.id}-author-${i}`} className={classes.author}>
+                  {name}
+                </span>
+              ))}
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import * as types from './home.types';
 import * as constants from './home.constants';
-import { IBook } from '../../resource/book/book.types';
+import { IBook, IBookSearchParams } from '../../resource/book/book.types';
 import { Pagination } from '../../common/pagination.types';
 
-export const searchBooks = (props: Pagination<string>): types.ISearchBooks => ({
+export const searchBooks = (props: Pagination<IBookSearchParams>): types.ISearchBooks => ({
   type: constants.SEARCH_BOOKS,
   payload: props,
 });

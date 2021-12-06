@@ -9,8 +9,13 @@ export interface IBook extends IResource {
   cover: string;
 }
 
+// export interface IBookSearchParams {
+//   [key: string]: string;
+// }
+
 export interface IBookSearchParams {
-  [key: string]: string;
+  title: string;
+  author: string;
 }
 
 export type IBookAction = IResourceAction<IBook>;

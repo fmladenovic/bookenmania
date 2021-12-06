@@ -1,12 +1,12 @@
 import { ISelector } from '../../common/common.types';
 import { Pagination } from '../../common/pagination.types';
-import { IBook } from '../../resource/book/book.types';
+import { IBook, IBookSearchParams } from '../../resource/book/book.types';
 
 import * as constants from './home.constants';
 
 export interface ISearchBooks {
   type: typeof constants.SEARCH_BOOKS;
-  payload: Pagination<string>;
+  payload: Pagination<IBookSearchParams>;
 }
 
 export interface IStoreSearchedBooks {
