@@ -21,20 +21,21 @@ export function* searchBooks(params: Pagination<IBookSearchParams>) {
   if (!pagedBooks) {
     return;
   }
-  const bookIds = (yield all(
-    pagedBooks.docs.map((book) =>
-      call(storeBook, {
-        id: createId(book.key),
-        key: book.key,
-        title: book.title,
-        authorName: book.authorName,
-        text: book.text,
-        coverI: book.coverI,
-        cover: createBookCoverPath(book.coverI),
-      }),
-    ),
+
+const books = pagedBooks.docs.map((book) => ({
+  id: createId(book.key),
+  key: book.key,
+  title: book.title,
+  authorName: book.authorName,
+  text: book.text,
+  coverI: book.coverI,
+  cover: createBookCoverPath(book.coverI),
+}));
+
+  const bookIds = (yield put(
+    actions.storeBook(books),
   )) as IBook['id'][];
-  return bookIds;
+  return books.map(book => book.id);
 }
 
 export function* getBook(isbn: IBook['id']) {

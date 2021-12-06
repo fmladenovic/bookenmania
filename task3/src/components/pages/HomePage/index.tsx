@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { PageLayout } from '../common/PageLayout';
+import Pagination from '../common/pagination';
 import { searchBooks } from '../../../app/page/home/home.actions';
 import { Grid, Input } from '@material-ui/core';
 import { useDebounce } from '../../../utils/debounce.utils';
@@ -10,6 +11,7 @@ import { useSelect, useSelectWithParams } from '../../../utils/selector.utils';
 import { apiSelectors } from '../../../app/api/api.selectors';
 import { useCallback } from 'react';
 import { BookItem } from './BookItem';
+import _ from 'lodash';
 
 export const HomePage: FunctionComponent = () => {
   const classes = useHomeStyles();
@@ -23,13 +25,18 @@ export const HomePage: FunctionComponent = () => {
   const inProgress = useSelectWithParams(apiSelectors.selectApiInProgress, 'searchBooks');
   const error = useSelectWithParams(apiSelectors.selectApiError, 'searchBooks');
 
-  const onQueryChange = useDebounce(
-    (queryString) => {
-      dispatch(searchBooks({ page, payload: queryString }));
-    },
-    1200,
-    [dispatch, page],
-  );
+  const searchForBooks = (searchType: string) => dispatch(searchBooks({ page, payload: searchType + ':' + query }));
+  let currentPage = 1;
+  const handlePageChange = (page: number) => {
+
+  };
+  // const onQueryChange = useDebounce(
+  //   (queryString) => {
+  //     dispatch(searchBooks({ page, payload: queryString }));
+  //   },
+  //   1200,
+  //   [dispatch, page],
+  // );
 
   const handleInfiniteScroll = useCallback(() => {
     setPage((prev) => prev + 1);
@@ -38,13 +45,13 @@ export const HomePage: FunctionComponent = () => {
   useEffect(() => {
     setShowSpinner(!error && inProgress);
   }, [error, inProgress, setShowSpinner]);
-  useEffect(() => {
-    if (query) {
-      setShowSpinner(true);
-      setPage(1);
-      onQueryChange(query);
-    }
-  }, [onQueryChange, query]);
+  // useEffect(() => {
+  //   if (query) {
+  //     setShowSpinner(true);
+  //     setPage(1);
+  //     onQueryChange(query);
+  //   }
+  // }, [onQueryChange, query]);
 
   useEffect(() => {
     if (page > 1) {
@@ -52,6 +59,13 @@ export const HomePage: FunctionComponent = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, page]);
+
+  function paginate(items: string[], pageNumber: number) {
+    const startIndex = (pageNumber - 1) * 4;
+    return _(items).slice(startIndex).take(4).value();
+  }
+  const booksToDisplay = paginate(bookIds, currentPage);
+
   return (
     <PageLayout onInfiniteScroll={handleInfiniteScroll} showSpinner={showSpinner}>
       <div className={classes.root}>
@@ -62,6 +76,8 @@ export const HomePage: FunctionComponent = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
+          <button onClick={() => searchForBooks('title')}>Search title</button>
+          <button onClick={() => searchForBooks('author')}>Search authors</button>
           <span className={classes.error}>{error?.message}</span>
           <p className={classes.notices}>
             Notice: Input should be in key:value format divided by space (&ldquo; &rdquo;)
@@ -73,12 +89,13 @@ export const HomePage: FunctionComponent = () => {
         </div>
 
         <Grid className={classes.booksWrapper} direction="row" container justify="space-around">
-          {bookIds.map((bookId) => (
+          {booksToDisplay.map((bookId) => (
             <Grid key={`searchedBook-${bookId}`} lg={4} md={3} sm={2} item>
               <BookItem bookId={bookId} />
             </Grid>
           ))}
         </Grid>
+        <Pagination itemsCount={bookIds.length} pageSize={4} onPageChange={handlePageChange} />
       </div>
     </PageLayout>
   );
